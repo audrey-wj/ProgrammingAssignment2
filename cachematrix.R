@@ -3,32 +3,37 @@
 ##
 
 makeMatrix <- function(x = matrix(, nrow = 0, ncol = 0)) 
-        #set x as the matrix, the default value for x is an empty matrix
+#set x as the matrix, the default value for x is an empty matrix
 {
-        #reset inv to be an empty matrix
-        inv <- matrix(, nrow = 0, ncol = 0)
         
-        #set, or reset, the matrix with matrix y
-        #this new matrix, y, will be passed to x in the makeMatrix frame
-        set <- function(y) {
+        inv <- matrix(, nrow = 0, ncol = 0)     #reset inv to be an empty matrix.
+        
+        set <- function(y)                      #set, or reset, the matrix with matrix y.
+                                                #this new matrix, y, will be passed to x 
+                                                #in the makeMatrix() frame.
+        {
                 x <<- y
-                #also reset the inv matrix to empty if x is being changed
-                inv <<- matrix()
+                inv <<- matrix()                #reset the inv matrix to empty if x is changed.
         }
         
-        #return the value of the matrix x
-        #if matrix is reset by set() function, return the reset value
-        #otherwise return the matrix that was passed when makeMatrix() function was called
-        get <- function() x
+        get <- function()  x                    #return the value of matrix x.
+                                                #if matrix is reset by set() function, 
+                                                #return the reset value.
+                                                #otherwise return the matrix that was passed 
+                                                #when makeMatrix() function was called.
         
-        #set inv to be the inverse matrix
-        #if the setinv() function is not explicitly called, inv will remain an empty matrix
-        setinv <- function(inverse) inv <<- inverse
+        setinv <- function(inverse)             #set inv to be the inverse matrix.
+                                                #if the setinv() function is never explicitly 
+                                                #called, inv will remain an empty matrix.
+        {
+                inv <<- inverse
+        }
         
-        #return inv
-        #if setinv() is never called, an empty matrix will be returned
-        #otherwise, the matrix that's set by the setinv() function will be returned
-        getinv <- function() inv
+        getinv <- function() inv                #return inv.
+                                                #if setinv() is never called, an emptry matrix
+                                                #will be returned.
+                                                #otherwise, the matrix that's set by the setinv()
+                                                #function will be returned.
         
         list(set = set, get = get,
              setinv = setinv, 
@@ -42,32 +47,31 @@ makeMatrix <- function(x = matrix(, nrow = 0, ncol = 0))
 
 
 cacheInverse <- function(x, ...) 
-        #the argument x here needs to be the list of function,
-        #like it is defined by the makeMatrix() function
+#the argument x here needs to be the list of function,
+#like it is defined by the makeMatrix() function
 {
-        #pass the getinv() result in the makeMatrix() function to inv
-        inv <- x$getinv()
         
-        #if inv is not empty, i.e., either the row # or the col # of inv >0, return this inv
-        #print the message "getting cached data" if inv is found in this step
-        if(nrow(inv) > 0 | ncol(inv) > 0) {
-                message("getting cached data")
+        inv <- x$getinv()                       #pass the getinv() result to inv
+        
+        if(nrow(inv) > 0 | ncol(inv) > 0)       #if inv is not empaty, i.e., either the row# or
+                                                #the col# >0, return this inv
+        {
+                message("getting cached data")  
                 return(inv)
         }
         
         #if getinv() fuction returns an empty matrix, calculate inv
         
-        #use the get() function in makeMatrix() function to pass the Matrix to mat
-        mat <- x$get()
-        #calculate the inverse matrix of mat, and pass it to inv
-        inv <- solve(mat, ...)
+        mat <- x$get()                          #use the get() function in makeMatrix() function 
+                                                #to pass the Matrix to mat
         
-        #pass this inverse matrix back to the makeVector() function using setinv() function
-        #so when the cacheInverse() function is called next time, the cached inverse will be used
-        x$setinv(inv)
+        inv <- solve(mat, ...)                  #calculate the inverse matrix of mat, 
+                                                #and pass it to inv
         
-        #return inv
-        #if inv was found in the cache instead of being calculated in the cacheInverse() function
-        #the message "getting cached data" will not show
-        inv
+        x$setinv(inv)                           #pass this inverse matrix back to the makeVector()
+                                                #fuction using setinv() function, so when the 
+                                                #cashInverse() function is called next time, the
+                                                #the cached inverse can be returned.
+        
+        inv                                     #return the calculated inv
 }
